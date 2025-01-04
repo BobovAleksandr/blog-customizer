@@ -6,70 +6,43 @@ import { RadioGroup } from 'src/ui/radio-group';
 import {
 	fontFamilyOptions,
 	defaultArticleState,
-	OptionType,
 	fontSizeOptions,
 	fontColors,
 	backgroundColors,
 	contentWidthArr,
+	OptionType,
+	ArticleStateType,
 } from 'src/constants/articleProps';
 import { Separator } from 'src/ui/separator';
 
 import styles from './ArticleParamsForm.module.scss';
 import clsx from 'clsx';
 
-export const ArticleParamsForm = () => {
+type Props = {
+	submitHandler: (params: ArticleStateType) => void;
+};
+
+export const ArticleParamsForm = (props: Props) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const asideClickHandler = () => {
 		setIsOpen(!isOpen);
 	};
 
-	const [currentFont, setCurrentFont] = useState(
-		defaultArticleState.fontFamilyOption
-	);
+	const [params, setParams] = useState({
+		fontFamilyOption: defaultArticleState.fontFamilyOption,
+		fontSizeOption: defaultArticleState.fontSizeOption,
+		fontColor: defaultArticleState.fontColor,
+		backgroundColor: defaultArticleState.backgroundColor,
+		contentWidth: defaultArticleState.contentWidth,
+	});
 
-	const fontChangeHandler = (currentFont: OptionType) => {
-		setCurrentFont(currentFont);
-	};
-
-	const [currentFontSize, setCurrentFontSize] = useState(
-		defaultArticleState.fontSizeOption
-	);
-
-	const RadioGroupChangeHandler = (currentFontSize: OptionType) => {
-		setCurrentFontSize(currentFontSize);
-	};
-
-	const [currentFontColor, setCurrentFontColor] = useState(
-		defaultArticleState.fontColor
-	);
-
-	const fontColorChangeHandler = (currentFontColor: OptionType) => {
-		setCurrentFontColor(currentFontColor);
-	};
-
-	const [currentBackgroundColor, setCurrentBackgroundColor] = useState(
-		defaultArticleState.backgroundColor
-	);
-
-	const backgroundColorChangeHandler = (currentBackgroundColor: OptionType) => {
-		setCurrentBackgroundColor(currentBackgroundColor);
-	};
-
-	const [currentContentWidth, setCurrentContentWidth] = useState(
-		defaultArticleState.contentWidth
-	);
-
-	const contentWidthChangeHandler = (currentContentWidth: OptionType) => {
-		setCurrentContentWidth(currentContentWidth);
+	const handleParamChange = (param: string, value: OptionType) => {
+		setParams({ ...params, [param]: value });
 	};
 
 	const resetHandler = () => {
-		setCurrentFont(defaultArticleState.fontFamilyOption);
-		setCurrentFontSize(defaultArticleState.fontSizeOption);
-		setCurrentFontColor(defaultArticleState.fontColor);
-		setCurrentBackgroundColor(defaultArticleState.backgroundColor);
-		setCurrentContentWidth(defaultArticleState.contentWidth);
+		setParams({ ...params, ...defaultArticleState });
 	};
 
 	return (
@@ -79,58 +52,48 @@ export const ArticleParamsForm = () => {
 				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
 				<form className={styles.form}>
 					<Select
-						selected={currentFont}
+						selected={params.fontFamilyOption}
 						options={fontFamilyOptions}
 						placeholder={defaultArticleState.fontFamilyOption.title}
 						onChange={(selectedValue) => {
-							fontChangeHandler(selectedValue);
-						}}
-						onClose={() => {
-							console.log('close'); // TODO что тут должно быть?
+							handleParamChange('fontFamilyOption', selectedValue);
 						}}
 						title='Шрифт'
 					/>
 					<RadioGroup
 						name='Размер шрифта'
 						options={fontSizeOptions}
-						selected={currentFontSize}
-						onChange={RadioGroupChangeHandler}
+						selected={params.fontSizeOption}
+						onChange={(selectedValue) => {
+							handleParamChange('fontSizeOption', selectedValue);
+						}}
 						title='Размер шрифта'
 					/>
 					<Select
-						selected={currentFontColor}
+						selected={params.fontColor}
 						options={fontColors}
 						placeholder={defaultArticleState.fontColor.title}
 						onChange={(selectedValue) => {
-							fontColorChangeHandler(selectedValue);
-						}}
-						onClose={() => {
-							console.log('close'); // TODO что тут должно быть?
+							handleParamChange('fontColor', selectedValue);
 						}}
 						title='Цвет шрифта'
 					/>
 					<Separator />
 					<Select
-						selected={currentBackgroundColor}
+						selected={params.backgroundColor}
 						options={backgroundColors}
 						placeholder={defaultArticleState.backgroundColor.title}
 						onChange={(selectedValue) => {
-							backgroundColorChangeHandler(selectedValue);
-						}}
-						onClose={() => {
-							console.log('close'); // TODO что тут должно быть?
+							handleParamChange('backgroundColor', selectedValue);
 						}}
 						title='Цвет фона'
 					/>
 					<Select
-						selected={currentContentWidth}
+						selected={params.contentWidth}
 						options={contentWidthArr}
 						placeholder={defaultArticleState.contentWidth.title}
 						onChange={(selectedValue) => {
-							contentWidthChangeHandler(selectedValue);
-						}}
-						onClose={() => {
-							console.log('close'); // TODO что тут должно быть?
+							handleParamChange('contentWidth', selectedValue);
 						}}
 						title='Ширина контента'
 					/>
@@ -139,13 +102,18 @@ export const ArticleParamsForm = () => {
 							title='Сбросить'
 							htmlType='reset'
 							type='clear'
-							onClick={resetHandler}
+							onClick={() => {
+								resetHandler();
+								props.submitHandler(defaultArticleState);
+							}}
 						/>
 						<Button
 							title='Применить'
 							htmlType='submit'
 							type='apply'
-							onClick={submitHandler}
+							onClick={() => {
+								props.submitHandler(params);
+							}}
 						/>
 					</div>
 				</form>
