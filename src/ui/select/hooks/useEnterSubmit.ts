@@ -4,7 +4,6 @@ type UseEnterSubmit = {
 	onChange: React.Dispatch<React.SetStateAction<boolean>>;
 	placeholderRef: React.RefObject<HTMLDivElement>;
 };
-
 export const useEnterSubmit = ({
 	placeholderRef,
 	onChange,
@@ -16,12 +15,15 @@ export const useEnterSubmit = ({
 		const handleEnterKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Enter') {
 				onChange((isOpen: boolean) => !isOpen);
+				console.log('enter');
 			}
 		};
 		placeholderEl.addEventListener('keydown', handleEnterKeyDown);
+		console.log('mount');
 
 		return () => {
 			placeholderEl.removeEventListener('keydown', handleEnterKeyDown);
+			console.log('unmount');
 		};
 	}, []);
 };
