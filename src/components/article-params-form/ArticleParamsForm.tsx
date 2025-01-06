@@ -122,6 +122,43 @@ export const ArticleParamsForm = (props: Props) => {
 						}}
 						title='Ширина контента'
 					/>
+					<RadioGroup
+						name='Размер шрифта'
+						options={fontSizeOptions}
+						selected={params.fontSizeOption}
+						onChange={(selectedValue) => {
+							handleParamChange('fontSizeOption', selectedValue);
+						}}
+						title='Размер шрифта'
+					/>
+					<Select
+						selected={params.fontColor}
+						options={fontColors}
+						placeholder={defaultArticleState.fontColor.title}
+						onChange={(selectedValue) => {
+							handleParamChange('fontColor', selectedValue);
+						}}
+						title='Цвет шрифта'
+					/>
+					<Separator />
+					<Select
+						selected={params.backgroundColor}
+						options={backgroundColors}
+						placeholder={defaultArticleState.backgroundColor.title}
+						onChange={(selectedValue) => {
+							handleParamChange('backgroundColor', selectedValue);
+						}}
+						title='Цвет фона'
+					/>
+					<Select
+						selected={params.contentWidth}
+						options={contentWidthArr}
+						placeholder={defaultArticleState.contentWidth.title}
+						onChange={(selectedValue) => {
+							handleParamChange('contentWidth', selectedValue);
+						}}
+						title='Ширина контента'
+					/>
 					<div className={styles.bottomContainer}>
 						<Button
 							title='Сбросить'
