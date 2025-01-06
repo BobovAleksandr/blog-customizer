@@ -1,9 +1,8 @@
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
-import { useState, useRef } from 'react';
+import { useState, useRef, SyntheticEvent } from 'react';
 import { Select } from 'src/ui/select';
 import { RadioGroup } from 'src/ui/radio-group';
-import { useEnterSubmit } from 'src/ui/select/hooks/useEnterSubmit';
 import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
 import {
 	fontFamilyOptions,
@@ -20,11 +19,11 @@ import { Separator } from 'src/ui/separator';
 import styles from './ArticleParamsForm.module.scss';
 import clsx from 'clsx';
 
-type Props = {
-	submitHandler: (params: ArticleStateType) => void;
+type ArticleProps = {
+	applyArticleStyles: (params: ArticleStateType) => void;
 };
 
-export const ArticleParamsForm = (props: Props) => {
+export const ArticleParamsForm = (props: ArticleProps) => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 	const formRef = useRef(null);
@@ -34,7 +33,7 @@ export const ArticleParamsForm = (props: Props) => {
 		setIsMenuOpen(!isMenuOpen);
 	};
 
-	const [params, setParams] = useState({
+	const [menuOptions, setMenuOptions] = useState({
 		fontFamilyOption: defaultArticleState.fontFamilyOption,
 		fontSizeOption: defaultArticleState.fontSizeOption,
 		fontColor: defaultArticleState.fontColor,
@@ -42,18 +41,13 @@ export const ArticleParamsForm = (props: Props) => {
 		contentWidth: defaultArticleState.contentWidth,
 	});
 
-	const handleParamChange = (param: string, value: OptionType) => {
-		setParams({ ...params, [param]: value });
+	const handleMenuOptionsChange = (param: string, value: OptionType) => {
+		setMenuOptions({ ...menuOptions, [param]: value });
 	};
 
 	const resetHandler = () => {
-		setParams({ ...params, ...defaultArticleState });
+		setMenuOptions({ ...menuOptions, ...defaultArticleState });
 	};
-
-	useEnterSubmit({
-		placeholderRef: menuRef,
-		onChange: setIsMenuOpen,
-	});
 
 	useOutsideClickClose({
 		rootRef: menuRef,
@@ -73,89 +67,53 @@ export const ArticleParamsForm = (props: Props) => {
 				<form
 					className={styles.form}
 					ref={formRef}
-					onSubmit={() => {
-						props.submitHandler(params);
+					onSubmit={(event: SyntheticEvent) => {
+						event.preventDefault();
+						props.applyArticleStyles(menuOptions);
 					}}>
 					<Select
-						selected={params.fontFamilyOption}
+						selected={menuOptions.fontFamilyOption}
 						options={fontFamilyOptions}
 						placeholder={defaultArticleState.fontFamilyOption.title}
 						onChange={(selectedValue) => {
-							handleParamChange('fontFamilyOption', selectedValue);
+							handleMenuOptionsChange('fontFamilyOption', selectedValue);
 						}}
 						title='Шрифт'
 					/>
 					<RadioGroup
 						name='Размер шрифта'
 						options={fontSizeOptions}
-						selected={params.fontSizeOption}
+						selected={menuOptions.fontSizeOption}
 						onChange={(selectedValue) => {
-							handleParamChange('fontSizeOption', selectedValue);
+							handleMenuOptionsChange('fontSizeOption', selectedValue);
 						}}
 						title='Размер шрифта'
 					/>
 					<Select
-						selected={params.fontColor}
+						selected={menuOptions.fontColor}
 						options={fontColors}
 						placeholder={defaultArticleState.fontColor.title}
 						onChange={(selectedValue) => {
-							handleParamChange('fontColor', selectedValue);
+							handleMenuOptionsChange('fontColor', selectedValue);
 						}}
 						title='Цвет шрифта'
 					/>
 					<Separator />
 					<Select
-						selected={params.backgroundColor}
+						selected={menuOptions.backgroundColor}
 						options={backgroundColors}
 						placeholder={defaultArticleState.backgroundColor.title}
 						onChange={(selectedValue) => {
-							handleParamChange('backgroundColor', selectedValue);
+							handleMenuOptionsChange('backgroundColor', selectedValue);
 						}}
 						title='Цвет фона'
 					/>
 					<Select
-						selected={params.contentWidth}
+						selected={menuOptions.contentWidth}
 						options={contentWidthArr}
 						placeholder={defaultArticleState.contentWidth.title}
 						onChange={(selectedValue) => {
-							handleParamChange('contentWidth', selectedValue);
-						}}
-						title='Ширина контента'
-					/>
-					<RadioGroup
-						name='Размер шрифта'
-						options={fontSizeOptions}
-						selected={params.fontSizeOption}
-						onChange={(selectedValue) => {
-							handleParamChange('fontSizeOption', selectedValue);
-						}}
-						title='Размер шрифта'
-					/>
-					<Select
-						selected={params.fontColor}
-						options={fontColors}
-						placeholder={defaultArticleState.fontColor.title}
-						onChange={(selectedValue) => {
-							handleParamChange('fontColor', selectedValue);
-						}}
-						title='Цвет шрифта'
-					/>
-					<Separator />
-					<Select
-						selected={params.backgroundColor}
-						options={backgroundColors}
-						placeholder={defaultArticleState.backgroundColor.title}
-						onChange={(selectedValue) => {
-							handleParamChange('backgroundColor', selectedValue);
-						}}
-						title='Цвет фона'
-					/>
-					<Select
-						selected={params.contentWidth}
-						options={contentWidthArr}
-						placeholder={defaultArticleState.contentWidth.title}
-						onChange={(selectedValue) => {
-							handleParamChange('contentWidth', selectedValue);
+							handleMenuOptionsChange('contentWidth', selectedValue);
 						}}
 						title='Ширина контента'
 					/>
@@ -166,7 +124,7 @@ export const ArticleParamsForm = (props: Props) => {
 							type='clear'
 							onClick={() => {
 								resetHandler();
-								props.submitHandler(defaultArticleState);
+								props.applyArticleStyles(defaultArticleState);
 							}}
 						/>
 						<Button title='Применить' htmlType='submit' type='apply' />
