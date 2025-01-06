@@ -4,7 +4,6 @@ type UseEnterSubmit = {
 	onChange: React.Dispatch<React.SetStateAction<boolean>>;
 	placeholderRef: React.RefObject<HTMLDivElement>;
 };
-
 export const useEnterSubmit = ({
 	placeholderRef,
 	onChange,
